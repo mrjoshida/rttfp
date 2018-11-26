@@ -18,5 +18,30 @@
     {
       "url": "news.mp4",
       "loop": 0
+    },
+  "4":
+    {
+      "url": "prospero.mp4",
+      "loop": 0
+    },
+  "5":
+    {
+      "url": "walking.mp4",
+      "loop": 1
+    },
+  "6":
+    {
+      "url": "polarity_drill.mp4",
+      "loop": 0
+    },
+  "7":
+    {
+      "url": "polarity_reversal.mp4",
+      "loop": 0
+    },
+  "8":
+    {
+      "url": "klystron_warning.mp4",
+      "loop": 0
     }
 }
