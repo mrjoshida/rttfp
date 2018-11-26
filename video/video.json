@@ -1,0 +1,22 @@
+{
+  "Key.space":
+    {
+      "url": "logo.mp4",
+      "loop": 1
+    },
+  "1":
+    {
+      "url": "rocket.mp4",
+      "loop": 1
+    },
+  "2":
+    {
+      "url": "monster.mp4",
+      "loop": 0
+    },
+  "3":
+    {
+      "url": "news.mp4",
+      "loop": 0
+    }
+}
