@@ -1,5 +1,3 @@
-import subprocess, signal
-
 import os
 from omxplayer.player import OMXPlayer
 from pathlib import Path
@@ -7,13 +5,9 @@ from pynput import keyboard
 import json
 
 # Kill all running omxplayer instances
-p = subprocess.Popen(['ps', '-A'], stdout=subprocess.PIPE)
-out, err = p.communicate()
-for line in out.splitlines():
-   if 'omxplayer' in line:
-     pid = int(line.split(None, 1)[0])
-     os.kill(pid, signal.SIGKILL)
 
+
+args_static = ['--win', '0 250 720 480', '--no-osd', '--no-keys', '--layer', '3']
 args = ['--win', '0 250 720 480', '--no-osd', '--no-keys', '--layer', '2']
 args_loop = ['--win', '0 250 720 480', '--no-osd', '--no-keys', '--layer', '1', '--loop']
 
@@ -22,8 +16,13 @@ data = json.load(file)
 print(data)
 
 looper = OMXPlayer(Path(data.get("Key.space")["url"]), args=args_loop, dbus_name="omxplayer.player0")
-player = OMXPlayer(Path(data.get("Key.space")["url"]), args=args, dbus_name="omxplayer.player1")
+player = OMXPlayer(Path(data.get("Key.space")["url"]), args=args, dbus_name="omxplayer.player1",
+                   play_event=static, stop_event=static)
+static = OMXPlayer(Path("static.mp4"), args=args_static, dbus_name="omxplayer.player2")
 player.hide_video()
+static.hide_video()
+static.set_alpha(127)
+
 
 def on_press(key):
     if key == keyboard.Key.esc:
@@ -49,7 +48,11 @@ def on_press(key):
             player.show_video()
                 
         print(video)
-    
+
+
+def static():
+    static.show_video()
+    static.play()
     
 with keyboard.Listener(on_press=on_press) as listener:
     listener.join()
