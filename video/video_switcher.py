@@ -1,34 +1,66 @@
-import os
+from threading import Timer
 from omxplayer.player import OMXPlayer
 from pathlib import Path
 from pynput import keyboard
+import psutil
 import json
 
 # Kill all running omxplayer instances
+for proc in psutil.process_iter():
+    if "omxplayer" in proc.name():
+        proc.kill()
 
-
-args_static = ['--win', '0 250 720 480', '--no-osd', '--no-keys', '--layer', '3']
-args = ['--win', '0 250 720 480', '--no-osd', '--no-keys', '--layer', '2']
-args_loop = ['--win', '0 250 720 480', '--no-osd', '--no-keys', '--layer', '1', '--loop']
+args_basic = ['--no-osd', '--no-keys']
+# Window mode for testing
+args_basic = args_basic + ['--win', '0 200 400 400']
+args_static = args_basic + ['--layer', '3', '--alpha', '127', '--loop']
+args = args_basic + ['--layer', '2', '--aspect-mode', 'fill']
+args_loop = args_basic + ['--layer', '1', '--loop']
+print(args_loop)
 
 file = open('video.json', 'r')
 data = json.load(file)
 print(data)
 
-looper = OMXPlayer(Path(data.get("Key.space")["url"]), args=args_loop, dbus_name="omxplayer.player0")
-player = OMXPlayer(Path(data.get("Key.space")["url"]), args=args, dbus_name="omxplayer.player1",
-                   play_event=static, stop_event=static)
-static = OMXPlayer(Path("static.mp4"), args=args_static, dbus_name="omxplayer.player2")
-player.hide_video()
-static.hide_video()
-static.set_alpha(127)
+def stop_static():
+    static.pause()
+    static.hide_video()
 
+def static_transition(*args):
+    static.show_video()
+    static.set_alpha(127)
+    static.play()
+    t = Timer(1.0, stop_static)
+    t.start()
+
+static_path = Path("static.mp4")
+background_path = Path("logo.mp4")
+looper = OMXPlayer(background_path, args=args_loop, dbus_name="omxplayer.player0")
+player = OMXPlayer(background_path, args=args, dbus_name="omxplayer.player1")
+static = OMXPlayer(static_path, args=args_static, dbus_name="omxplayer.player2")
+static.hide_video()
+static.pause()
+static.set_alpha(127)
+player.hide_video()
+player.pause()
+#static.hide_video()
+looper.exitEvent += static_transition
+player.exitEvent += static_transition
 
 def on_press(key):
     if key == keyboard.Key.esc:
-        player.stop()
-        looper.stop()
-        print("quitting")
+        try:
+            static.stop()
+        except:
+            print("static not running")
+        try:
+            player.stop()
+        except:
+            print("player not running")
+        try:
+            looper.stop()
+        except:
+            print("looper not running")
         return
     try:
         key = key.char
@@ -46,15 +78,15 @@ def on_press(key):
             #if player.is_playing(): player.stop()
             player.load(Path(video["url"]))
             player.show_video()
+            #looper.load(background_path)
                 
         print(video)
 
 
-def static():
-    static.show_video()
-    static.play()
     
 with keyboard.Listener(on_press=on_press) as listener:
     listener.join()
+
+
 
 
