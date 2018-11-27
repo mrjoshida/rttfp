@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from threading import Timer
 from omxplayer.player import OMXPlayer
 from pathlib import Path
@@ -8,13 +9,16 @@ import json
 # Kill all running omxplayer instances
 for proc in psutil.process_iter():
     if "omxplayer" in proc.name():
-        proc.kill()
+        try:
+            proc.kill()
+        except:
+            print("Couldn't kill omxplayer")
 
-args_basic = ['--no-osd', '--no-keys']
+args_basic = ['--no-osd', '--no-keys', '--aspect-mode', 'fill']
 # Window mode for testing
-args_basic = args_basic + ['--win', '0 200 400 400']
+#args_basic = args_basic + ['--win', '0 200 400 400']
 args_static = args_basic + ['--layer', '3', '--alpha', '127', '--loop']
-args = args_basic + ['--layer', '2', '--aspect-mode', 'fill']
+args = args_basic + ['--layer', '2']
 args_loop = args_basic + ['--layer', '1', '--loop']
 print(args_loop)
 
@@ -23,15 +27,25 @@ data = json.load(file)
 print(data)
 
 def stop_static():
-    static.pause()
-    static.hide_video()
+    try:
+        static.pause()
+        static.hide_video()
+    except:
+        print("failed to stop static")
 
-def static_transition(*args):
-    static.show_video()
-    static.set_alpha(127)
-    static.play()
-    t = Timer(1.0, stop_static)
-    t.start()
+def static_transition(player, exit_status):
+    try:
+        static.show_video()
+        if player == looper:
+            static.set_alpha(255)
+        else:
+            static.set_alpha(127)
+        static.play()
+        t = Timer(1.0, stop_static)
+        t.start()
+    except:
+        print("static failed")
+        static.hide_video()
 
 static_path = Path("static.mp4")
 background_path = Path("logo.mp4")
@@ -47,6 +61,7 @@ player.pause()
 looper.exitEvent += static_transition
 player.exitEvent += static_transition
 
+
 def on_press(key):
     if key == keyboard.Key.esc:
         try:
@@ -61,32 +76,29 @@ def on_press(key):
             looper.stop()
         except:
             print("looper not running")
-        return
-    try:
-        key = key.char
-    except AttributeError:
-        key = str(key)
-    video = data.get(key, False)
-    if video:
-        if video['loop'] == 1:
-            print("looping")
-            #if looper.is_playing(): looper.stop()
-            looper.load(Path(video["url"]))
-            player.hide_video()
-            #if player.is_playing(): player.stop()
-        else:
-            #if player.is_playing(): player.stop()
-            player.load(Path(video["url"]))
-            player.show_video()
-            #looper.load(background_path)
-                
-        print(video)
+    else:
+        try:
+            key = key.char
+        except AttributeError:
+            key = str(key)
+        video = data.get(key, False)
+        if video:
+            if video['loop'] == 1:
+                try:
+                    print("looping")
+                    looper.load(Path(video["url"]))
+                    player.hide_video()
+                except:
+                    print("failed to start loop")
+            else:
+                try:
+                    player.load(Path(video["url"]))
+                    player.show_video()
+                except:
+                    print("failed to start video")
+
+            print(video)
 
 
-    
 with keyboard.Listener(on_press=on_press) as listener:
     listener.join()
-
-
-
-

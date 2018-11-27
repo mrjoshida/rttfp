@@ -4,44 +4,69 @@
       "url": "logo.mp4",
       "loop": 1
     },
-  "1":
+  "f":
     {
-      "url": "rocket.mp4",
+      "url": "flying.mp4",
       "loop": 1
     },
-  "2":
+  "a":
     {
-      "url": "monster.mp4",
-      "loop": 0
+      "url": "asteroids.mp4",
+      "loop": 1
     },
-  "3":
+  "s":
     {
-      "url": "news.mp4",
-      "loop": 0
+      "url": "stars.mp4",
+      "loop": 1
     },
-  "4":
+  "p":
     {
       "url": "prospero.mp4",
-      "loop": 0
+      "loop": 1
     },
-  "5":
+  "b":
+    {
+      "url": "before_explosion.mp4",
+      "loop": 1
+    },
+  "w":
     {
       "url": "walking.mp4",
       "loop": 1
     },
-  "6":
+  "d":
     {
-      "url": "polarity_drill.mp4",
+      "url": "drill.mp4",
+      "loop": 1
+    },
+  "e":
+    {
+      "url": "explosion.mp4",
       "loop": 0
     },
-  "7":
+  "k":
     {
-      "url": "polarity_reversal.mp4",
+      "url": "klystron.mp4",
+      "loop": 1
+    },
+  "l":
+    {
+      "url": "landing.mp4",
       "loop": 0
     },
-  "8":
+  "m":
     {
-      "url": "klystron_warning.mp4",
+      "url": "monster.mp4",
       "loop": 0
+    },
+  "n":
+    {
+      "url": "news.mp4",
+      "loop": 0
+    },
+  "r":
+    {
+      "url": "reversal.mp4",
+      "loop": 1
     }
 }
