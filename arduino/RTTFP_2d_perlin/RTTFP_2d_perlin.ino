@@ -4,8 +4,8 @@
 
 #define PIN A8
 
-uint8_t x_off = random(0, 1000);
-uint8_t y_off = random(0, 1000);
+uint16_t x_off = random(0, 1000);
+uint16_t y_off = random(0, 1000);
 
 Adafruit_NTSC40x24 display; // NTSC 40x24 currently the only supported type
 
@@ -20,7 +20,7 @@ void loop() {
       display.drawPixel(x, y, inoise8(x_off + x, y_off + y));
     }
   }
-  y_off += 0.05;
+  y_off++;
   delay(100);                     // Wait 1/10 sec
   
 }
