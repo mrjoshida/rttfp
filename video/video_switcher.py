@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import sys
 from threading import Timer
 from omxplayer.player import OMXPlayer
 from pathlib import Path
@@ -7,16 +8,19 @@ import psutil
 import json
 
 # Kill all running omxplayer instances
-for proc in psutil.process_iter():
-    if "omxplayer" in proc.name():
-        try:
-            proc.kill()
-        except:
-            print("Couldn't kill omxplayer")
+def kill_all():
+  for proc in psutil.process_iter():
+      if "omxplayer" in proc.name():
+          try:
+              proc.kill()
+          except:
+              print("Couldn't kill omxplayer")
+
+kill_all()
 
 args_basic = ['--no-osd', '--no-keys', '--aspect-mode', 'fill']
 # Window mode for testing
-#args_basic = args_basic + ['--win', '0 200 400 400']
+args_basic = args_basic + ['--win', '0 0 200 200']
 args_static = args_basic + ['--layer', '3', '--alpha', '127', '--loop']
 args = args_basic + ['--layer', '2']
 args_loop = args_basic + ['--layer', '1', '--loop']
@@ -65,17 +69,11 @@ player.exitEvent += static_transition
 def on_press(key):
     if key == keyboard.Key.esc:
         try:
-            static.stop()
+            kill_all()
         except:
-            print("static not running")
-        try:
-            player.stop()
-        except:
-            print("player not running")
-        try:
-            looper.stop()
-        except:
-            print("looper not running")
+            print("couldn't kill all")
+        sys.exit()
+        
     else:
         try:
             key = key.char
